@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Field:
-    string: str
+    pattern: str
     sep: str = r"\s*:\s*"  # E.g.: ' : '
     leading: str = r"\s*"
     specifier: str = None
@@ -16,12 +16,12 @@ class Field:
 
     def __post_init__(self):
         if not self.specifier:
-            self.specifier = self.string.lower().replace(" ", "_")
+            self.specifier = self.pattern.lower().replace(" ", "_")
         if not self.value:
             self.value = r".*?"
         regstr = (
             rf"^{self.leading}"
-            rf"{self.string}"
+            rf"{self.pattern}"
             rf"{self.sep}"
             rf"(?P<{self.specifier}>{self.value})\n"
         )
@@ -44,8 +44,9 @@ class Parser:
         )
 
     def parse(self, string):
-        matches = []
-        for substr in re.split(self.sep, string):
-            if mtch := self.regex.search(substr):
-                matches.append(mtch.groupdict())
-        return matches
+        """Iterate over each substring"""
+        return [
+            mtch.groupdict()
+            for substr in re.split(self.sep, string)
+            if (mtch := self.regex.search(substr))
+        ]

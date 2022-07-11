@@ -1,0 +1,6 @@
+*.swp
+*.pyc
+.python-version
+build
+*.egg-info
+.tox

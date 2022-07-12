@@ -1,0 +1,31 @@
+site_name: grouper
+site_url:
+use_directory_urls: false
+strict: true
+
+theme:
+  name: material
+extra_css:
+  - extra.css
+
+nav:
+  - "Library Overview": index.md
+  - "Module": grouper.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          selection:
+            filters:
+              - "!^_"
+              - "^__init__$"
+          rendering:
+            show_if_no_docstring: false
+            show_root_heading: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences

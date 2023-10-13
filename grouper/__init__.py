@@ -1,8 +1,10 @@
 #!/usr/bin/env python
+"""Grouper main classes."""
+
+from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import List, Dict
 
 
 @dataclass
@@ -10,6 +12,7 @@ class Field:
     """Class to identify a key/value pair by regular expression.
 
     Arguments:
+    ---------
         pattern (str): Main pattern identifying the field to look for.
         separator (str): Pattern that separator the identifying string from the
             value.
@@ -19,6 +22,7 @@ class Field:
         optional (bool): Boolean indicating whether the field is optional.
 
     """
+
     pattern: str
     separator: str = r"\s*:\s*"
     leading: str = r"\s*"
@@ -26,7 +30,8 @@ class Field:
     value: str = None
     optional: bool = False
 
-    def __post_init__(self) -> None:
+    def __post_init__(self: Field) -> None:
+        """Build the regex."""
         if not self.specifier:
             self.specifier = self.pattern.lower().replace(" ", "_")
         if not self.value:
@@ -46,16 +51,19 @@ class Field:
 
 @dataclass
 class Parser:
+    """Parser class."""
+
     fields: Field
     separator: str = r"^\s*$"  # (blank line)
 
-    def __post_init__(self) -> None:
+    def __post_init__(self: Parser) -> None:
+        """Build regex."""
         self.regex = re.compile(
             "%s" % (".*?".join(field.regex.pattern for field in self.fields)),
             re.MULTILINE | re.DOTALL,
         )
 
-    def parse(self, string: str) -> List[Dict[str, str]]:
+    def parse(self: Parser, string: str) -> list[dict[str, str]]:
         """Parse string and produce groupings.
 
         Iterate over each substring separated by our separator and turn them
@@ -63,9 +71,11 @@ class Parser:
 
 
         Arguments:
+        ---------
             string (str): The string to parse.
 
         Returns:
+        -------
             list: A list of dicts.
         """
         return [

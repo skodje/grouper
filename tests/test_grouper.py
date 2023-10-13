@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import pytest
+
 from grouper import Parser, Field
 
 
@@ -37,32 +39,112 @@ Memory Module Information
 """
 
 
-def test_optional():
-    parser = Parser(
-        [
-            Field("Socket Designation"),
-            Field("Bank Connections"),
-            Field("Extra Info", optional=True),
-            Field("Error Status", specifier="status"),
-        ],
-        "Handle.*",
-    )
-    result = parser.parse(DMI_OUTPUT)
-    assert {
-        "socket_designation": "RAM socket #5",
-        "bank_connections": "None",
-        "extra_info": "This is extra stuff",
-        "status": "OK",
-    } in result
-    assert {
-        "socket_designation": "RAM socket #6",
-        "bank_connections": "None",
-        "extra_info": None,
-        "status": "OK",
-    } in result
-    assert {
-        "socket_designation": "RAM socket #7",
-        "bank_connections": "None",
-        "extra_info": None,
-        "status": "OK",
-    } in result
+@pytest.mark.parametrize(
+    "fields, separator, expected",
+    [
+        pytest.param(
+            [
+                Field("Socket Designation"),
+            ],
+            "Handle.*",
+            [
+                {
+                    "socket_designation": "RAM socket #5",
+                },
+                {
+                    "socket_designation": "RAM socket #6",
+                },
+                {
+                    "socket_designation": "RAM socket #7",
+                },
+            ],
+            id="Single field",
+        ),
+        pytest.param(
+            [
+                Field("Socket Designation"),
+                Field("Bank Connections"),
+            ],
+            r"^\s*$",
+            [
+                {
+                    "socket_designation": "RAM socket #5",
+                    "bank_connections": "None",
+                },
+                {
+                    "socket_designation": "RAM socket #6",
+                    "bank_connections": "None",
+                },
+                {
+                    "socket_designation": "RAM socket #7",
+                    "bank_connections": "None",
+                },
+            ],
+            id="Empty separator",
+        ),
+        pytest.param(
+            [
+                Field("Socket Designation"),
+                Field("Bank Connections"),
+                Field("Extra Info", optional=True),
+                Field("Error Status", specifier="status"),
+            ],
+            "Handle.*",
+            [
+                {
+                    "socket_designation": "RAM socket #5",
+                    "bank_connections": "None",
+                    "extra_info": "This is extra stuff",
+                    "status": "OK",
+                },
+                {
+                    "socket_designation": "RAM socket #6",
+                    "bank_connections": "None",
+                    "extra_info": None,
+                    "status": "OK",
+                },
+                {
+                    "socket_designation": "RAM socket #7",
+                    "bank_connections": "None",
+                    "extra_info": None,
+                    "status": "OK",
+                },
+            ],
+            id="Including optional parameter",
+        ),
+        pytest.param(
+            [
+                Field("Socket Designation"),
+                Field("Bank Connections"),
+                Field("Extra Info", optional=True),
+                Field("Error Status", specifier="status"),
+            ],
+            "Handle.*",
+            [
+                {
+                    "socket_designation": "RAM socket #5",
+                    "bank_connections": "None",
+                    "extra_info": "This is extra stuff",
+                    "status": "OK",
+                },
+                {
+                    "socket_designation": "RAM socket #6",
+                    "bank_connections": "None",
+                    "extra_info": None,
+                    "status": "OK",
+                },
+                {
+                    "socket_designation": "RAM socket #7",
+                    "bank_connections": "None",
+                    "extra_info": None,
+                    "status": "OK",
+                },
+            ],
+            id="Including optional parameter",
+        ),
+    ],
+)
+def test_parser(fields, separator, expected):
+    """Test the string parser"""
+    parser = Parser(fields, separator)
+    assert parser.parse(DMI_OUTPUT) == expected

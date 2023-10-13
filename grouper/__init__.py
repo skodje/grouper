@@ -47,7 +47,7 @@ class Field:
 @dataclass
 class Parser:
     fields: Field
-    separator: str = ""
+    separator: str = r"^\s*$"  # (blank line)
 
     def __post_init__(self) -> None:
         self.regex = re.compile(
@@ -70,6 +70,6 @@ class Parser:
         """
         return [
             mtch.groupdict()
-            for substr in re.split(self.separator, string)
+            for substr in re.split(self.separator, string, flags=re.MULTILINE)
             if (mtch := self.regex.search(substr))
         ]

@@ -26,8 +26,8 @@ class Field:
     pattern: str
     separator: str = r"\s*:\s*"
     leading: str = r"\s*"
-    specifier: str = None
-    value: str = None
+    specifier: str = ""
+    value: str = ""
     optional: bool = False
 
     def __post_init__(self: Field) -> None:
@@ -53,7 +53,7 @@ class Field:
 class Parser:
     """Parser class."""
 
-    fields: Field
+    fields: list[Field]
     separator: str = r"^\s*$"  # (blank line)
 
     def __post_init__(self: Parser) -> None:

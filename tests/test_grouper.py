@@ -112,36 +112,6 @@ Memory Module Information
             ],
             id="Including optional parameter",
         ),
-        pytest.param(
-            [
-                Field("Socket Designation"),
-                Field("Bank Connections"),
-                Field("Extra Info", optional=True),
-                Field("Error Status", specifier="status"),
-            ],
-            "Handle.*",
-            [
-                {
-                    "socket_designation": "RAM socket #5",
-                    "bank_connections": "None",
-                    "extra_info": "This is extra stuff",
-                    "status": "OK",
-                },
-                {
-                    "socket_designation": "RAM socket #6",
-                    "bank_connections": "None",
-                    "extra_info": None,
-                    "status": "OK",
-                },
-                {
-                    "socket_designation": "RAM socket #7",
-                    "bank_connections": "None",
-                    "extra_info": None,
-                    "status": "OK",
-                },
-            ],
-            id="Including optional parameter",
-        ),
     ],
 )
 def test_parser(fields, separator, expected):
